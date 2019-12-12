@@ -1,14 +1,16 @@
 //
 // Created by ahmednasser on 12/7/19.
 //
-
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <cstring>
+#include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include "packets.cpp"
+#include <pthread.h>
 #include <mutex>
 #include <fstream>
 #include <poll.h>
@@ -168,18 +170,14 @@ int main() {
 
         if(data->len == 8){
             break;
-        }else if(expSeqNum == data->seqno&&GBN){
+        }else if(expSeqNum == data->seqno){
             expSeqNum++;
             file.write(data->data,data->len-8);
             //append here
 
         }
-        //GBN
-        if(GBN) {
+
             ack->ackno = expSeqNum;
-        }else{
-            ack->ackno =data->seqno+1;
-        }
 
         if(random()%100 <10 ){
             usleep(1000);
